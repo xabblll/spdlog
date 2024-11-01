@@ -80,6 +80,10 @@ option(SPDLOG_BUILD_BENCH "Build benchmarks (Requires https://github.com/google/
 
 # sanitizer options
 option(SPDLOG_SANITIZE_ADDRESS "Enable address sanitizer in tests" OFF)
+option(SPDLOG_SANITIZE_THREAD "Enable thread sanitizer in tests" OFF)
+if(SPDLOG_SANITIZE_ADDRESS AND SPDLOG_SANITIZE_THREAD)
+    message(FATAL_ERROR "SPDLOG_SANITIZE_ADDRESS and SPDLOG_SANITIZE_THREAD are mutually exclusive")
+endif()
 
 # warning options
 option(SPDLOG_BUILD_WARNINGS "Enable compiler warnings" OFF)
@@ -193,6 +197,13 @@ if(COMMAND target_precompile_headers AND SPDLOG_ENABLE_PCH)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/pch.h.in ${PROJECT_BINARY_DIR}/spdlog_pch.h @ONLY)
     target_precompile_headers(spdlog PRIVATE ${PROJECT_BINARY_DIR}/spdlog_pch.h)
 endif()
+
+# sanitizer support
+if(SPDLOG_SANITIZE_ADDRESS)
+    spdlog_enable_addr_sanitizer(spdlog)
+elseif (SPDLOG_SANITIZE_THREAD)
+    spdlog_enable_thread_sanitizer(spdlog)
+endif ()
 
 # ---------------------------------------------------------------------------------------
 # Header only version
