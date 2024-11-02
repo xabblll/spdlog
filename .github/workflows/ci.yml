@@ -111,8 +111,7 @@ jobs:
             WCHAR_FILES: 'ON'
             BUILD_EXAMPLE: 'OFF'
             USE_STD_FORMAT: 'ON'
-            CXX_STANDARD: 20
-            run-name: MAT ${{ matrix.config.GENERATOR }} CXX=${{matrix.config.CXX_STANDARD}} WCHAR=${{matrix.config.WCHAR_FILES}} STD_FORMAT=${{matrix.config.USE_STD_FORMAT}}
+            CXX_STANDARD: 20            
     
     steps:
       - name: Checkout code
