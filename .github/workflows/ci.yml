@@ -153,5 +153,5 @@ jobs:
       - name: Tests        
         shell: pwsh
         run: |          
-          ctest -VV -C ${{ matrix.config.BUILD_TYPE }} --test-dir build/tests --no-tests=error --build-config Release
+          ctest -VV -C ${{ matrix.config.BUILD_TYPE }} --test-dir build --no-tests=error --build-config Release
         
