@@ -138,10 +138,10 @@ jobs:
         shell: pwsh
         run: |
           cd build
-          cmake --build . --config ${{ matrix.config.BUILD_TYPE }}
+          cmake --build  --parallel . --config ${{ matrix.config.BUILD_TYPE }}
 
       - name: Run tests
         shell: pwsh        
         run: |
           cd build
-          run: ctest --C ${{ matrix.config.BUILD_TYPE }} --output-on-failure --verbose
+          ctest --C ${{ matrix.config.BUILD_TYPE }} --output-on-failure --verbose
