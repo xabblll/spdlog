@@ -89,6 +89,7 @@ jobs:
   build_windows:
     runs-on: windows-latest
     strategy:
+      fail-fast: true
       matrix:
         config:          
           - GENERATOR: "Visual Studio 17 2022"
@@ -111,12 +112,13 @@ jobs:
             BUILD_EXAMPLE: 'OFF'
             USE_STD_FORMAT: 'ON'
             CXX_STANDARD: 20
-
+            run-name: MAT ${{ matrix.config.GENERATOR }} CXX=${{matrix.config.CXX_STANDARD}} WCHAR=${{matrix.config.WCHAR_FILES}} STD_FORMAT=${{matrix.config.USE_STD_FORMAT}}
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: CMake ${{ matrix.config.GENERATOR }} CXX=${{matrix.config.CXX_STANDARD}} WCHAR=${{matrix.config.WCHAR_FILES}}
+      - name: CMake ${{ matrix.config.GENERATOR }} CXX=${{matrix.config.CXX_STANDARD}} WCHAR=${{matrix.config.WCHAR_FILES}} STD_FORMAT=${{matrix.config.USE_STD_FORMAT}}
         shell: pwsh
         run: |
           mkdir build
