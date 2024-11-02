@@ -90,9 +90,9 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        config:
+        config:          
           - GENERATOR: "Visual Studio 17 2022"
-            ARCH: "-A x64"
+            ARCH: "-A x64"            
             BUILD_TYPE: Release
             BUILD_SHARED: 'ON'
             FATAL_ERRORS: 'ON'
@@ -116,7 +116,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: CMake
+      - name: CMake ${{ matrix.config.GENERATOR }} CXX=${{matrix.config.CXX_STANDARD}} WCHAR=${{matrix.config.WCHAR_FILES}}
         shell: pwsh
         run: |
           mkdir build
