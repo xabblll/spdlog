@@ -140,6 +140,11 @@ jobs:
           cd build
           cmake --build  . --parallel --config ${{ matrix.config.BUILD_TYPE }}
 
-      - name: Run tests
-        shell: pwsh        
-        run: ctest --test-dir build -C Release --output-on-failure --verbose
+      - name: Test Project
+        uses: threeal/ctest-action@v1.1.0
+        with:
+          build-config: ${{ matrix.config.BUILD_TYPE }}
+
+      # - name: Run tests
+      #   shell: pwsh        
+      #   run: ctest --test-dir build/tests -C Release --output-on-failure --verbose
