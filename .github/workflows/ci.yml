@@ -117,7 +117,7 @@ jobs:
         uses: actions/checkout@v4
       
       - name: CMake
-        shell: pwsh
+        shell: cmd
         run: |
           mkdir build
           cd build
@@ -135,10 +135,12 @@ jobs:
             -D CMAKE_CXX_STANDARD=${{ matrix.config.CXX_STANDARD }} ..
 
       - name: Build
-        shell: pwsh
+        shell: cmd
         run: |
           cd build
           cmake --build  . --parallel --config ${{ matrix.config.BUILD_TYPE }}
       
       - name: Tests        
-        run: ctest -C Release -VV --build-run-dir build/${{ matrix.config.BUILD_TYPE }}
+        shell: cmd
+        run: ctest -VV -C {{ matrix.config.BUILD_TYPE }} --test-dir build/tests --build-run-dir build/${{ matrix.config.BUILD_TYPE }} --no-tests=error
+        
