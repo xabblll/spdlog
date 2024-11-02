@@ -56,8 +56,8 @@ jobs:
             -DSPDLOG_BUILD_TESTS=ON \
             -DSPDLOG_BUILD_TESTS_HO=OFF \
             -DSPDLOG_SANITIZE_ADDRESS=${{ matrix.config.asan || 'ON' }}
-          make -j2
-          ctest -j2 --output-on-failure
+          make -j 4
+          ctest -j 4 --output-on-failure
 
   # -----------------------------------------------------------------------
   # OS X build matrix
@@ -80,6 +80,6 @@ jobs:
             -DSPDLOG_BUILD_TESTS=ON \
             -DSPDLOG_BUILD_TESTS_HO=OFF \
             -DSPDLOG_SANITIZE_ADDRESS=OFF
-          make -j2
-          ctest -j2 --output-on-failure
+          make -j 4
+          ctest -j 4 --output-on-failure
 
