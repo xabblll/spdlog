@@ -116,7 +116,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Configure CMake
+      - name: CMake
         shell: pwsh
         run: |
           mkdir build
@@ -143,4 +143,5 @@ jobs:
       - name: Run tests
         shell: pwsh        
         run: |
-          build\tests\${{ matrix.config.BUILD_TYPE }}\spdlog-utests.exe
+          cd build
+          run: ctest --C ${{ matrix.config.BUILD_TYPE }} --output-on-failure --verbose
