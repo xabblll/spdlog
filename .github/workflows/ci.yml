@@ -92,7 +92,7 @@ jobs:
       fail-fast: true
       matrix:
         config:          
-          - GENERATOR: "Visual Studio 17 2022 -A x64"            
+          - GENERATOR: "Visual Studio 17 2022"
             BUILD_TYPE: Release
             BUILD_SHARED: 'ON'
             FATAL_ERRORS: 'ON'
@@ -101,7 +101,7 @@ jobs:
             BUILD_EXAMPLE: 'OFF'
             USE_STD_FORMAT: 'ON'
             CXX_STANDARD: 20
-          - GENERATOR: "Visual Studio 17 2022 -A x64"
+          - GENERATOR: "Visual Studio 17 2022"
             ARCH: "-A x64"
             BUILD_TYPE: Release
             BUILD_SHARED: 'ON'
@@ -111,7 +111,7 @@ jobs:
             BUILD_EXAMPLE: 'OFF'
             USE_STD_FORMAT: 'ON'
             CXX_STANDARD: 20            
-          - GENERATOR: "Visual Studio 17 2022 -A x64"
+          - GENERATOR: "Visual Studio 17 2022"
             ARCH: "-A x64"
             BUILD_TYPE: Release
             BUILD_SHARED: 'ON'
@@ -126,7 +126,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: CMake ${{ matrix.config.GENERATOR }} CXX=${{matrix.config.CXX_STANDARD}} WCHAR=${{matrix.config.WCHAR_FILES}} STD_FORMAT=${{matrix.config.USE_STD_FORMAT}}
+      - name: CMake ${{ matrix.config.GENERATOR }} -A x64 CXX=${{matrix.config.CXX_STANDARD}} WCHAR=${{matrix.config.WCHAR_FILES}} STD_FORMAT=${{matrix.config.USE_STD_FORMAT}}
         shell: pwsh
         run: |
           mkdir build
