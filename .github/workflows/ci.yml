@@ -139,12 +139,16 @@ jobs:
         run: |
           cd build
           cmake --build  . --parallel --config ${{ matrix.config.BUILD_TYPE }}
-      
-      - name: Tests        
+
+      - name: Copy DLLs to ctest build directory
         shell: pwsh
         run: |
-          $DLL_PATH = Join-Path -Path (Get-Location) -ChildPath "build/Release"          
-          $env:Path += ';' + $env:DLL_PATH
-          echo "Path=$env:Path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          ctest -VV -C ${{ matrix.config.BUILD_TYPE }} --test-dir build/tests --no-tests=error
+          $dllSourcePath = "build/${{ matrix.config.BUILD_TYPE }}"
+          $dllDestPath = "build/tests"
+          Copy-Item -Path "$dllSourcePath\*.dll" -Destination $dllDestPath -Force
+          
+      - name: Tests        
+        shell: pwsh
+        run: |          
+          ctest -VV -C ${{ matrix.config.BUILD_TYPE }} --test-dir build/tests --no-tests=error --build-config Release
         
