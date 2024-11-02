@@ -146,7 +146,10 @@ jobs:
           $dllSourcePath = "build/${{ matrix.config.BUILD_TYPE }}"
           $dllDestPath = "build/tests"
           Copy-Item -Path "$dllSourcePath\*.dll" -Destination $dllDestPath -Force
-          
+
+      - name: Run Tests0
+        run: ctest --test-dir build -C Release --output-on-failure --verbose
+        
       - name: Tests        
         shell: pwsh
         run: |          
