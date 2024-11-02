@@ -1,4 +1,4 @@
-name: msvc
+name: windows
 
 on: [push, pull_request]
 
