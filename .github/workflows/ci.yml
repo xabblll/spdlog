@@ -144,4 +144,4 @@ jobs:
         shell: pwsh        
         run: |
           cd build
-          ctest --C ${{ matrix.config.BUILD_TYPE }} --output-on-failure --verbose
+          ctest --config ${{ matrix.config.BUILD_TYPE }} --output-on-failure --verbose
