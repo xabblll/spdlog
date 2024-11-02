@@ -142,5 +142,7 @@ jobs:
       
       - name: Tests        
         shell: pwsh
-        run: ctest -VV -C ${{ matrix.config.BUILD_TYPE }} --test-dir build/tests --build-run-dir build/${{ matrix.config.BUILD_TYPE }} --no-tests=error
+        run: |
+          cd build/${{ matrix.config.BUILD_TYPE }}
+          ctest -VV -C ${{ matrix.config.BUILD_TYPE }} --test-dir ../tests --no-tests=error
         
