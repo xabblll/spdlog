@@ -1,4 +1,4 @@
-name: nix_gcc_clang
+name: gcc_clang
 
 on: [push, pull_request]
 
