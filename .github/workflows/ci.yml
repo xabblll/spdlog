@@ -139,19 +139,12 @@ jobs:
         run: |
           cd build
           cmake --build  . --parallel --config ${{ matrix.config.BUILD_TYPE }}
-
-      - name: Copy DLLs to ctest build directory
-        shell: pwsh
-        run: |
-          $dllSourcePath = "build/${{ matrix.config.BUILD_TYPE }}"
-          $dllDestPath = "build/tests"
-          Copy-Item -Path "$dllSourcePath\*.dll" -Destination $dllDestPath -Force
-
-        
-      - name: Tests        
+     
+      - name: Run Tests        
         shell: pwsh
         env:
           PATH: ${{ env.PATH }};${{ github.workspace }}\build\_deps\catch2-build\src\${{ matrix.config.BUILD_TYPE }};${{ github.workspace }}\build\${{ matrix.config.BUILD_TYPE }}
         run: |          
-          ctest -VV -C ${{ matrix.config.BUILD_TYPE }} --test-dir build/tests --no-tests=error --build-config Release
+          build\tests\${{ matrix.config.BUILD_TYPE }}\spdlog-utests.exe
+
         
