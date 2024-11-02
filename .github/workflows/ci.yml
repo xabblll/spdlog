@@ -114,11 +114,8 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
-
-      # - name: Set up CMake
-      #   uses: jwlawson/actions-setup-cmake@v2
-
+        uses: actions/checkout@v4
+      
       - name: Configure CMake
         shell: pwsh
         run: |
@@ -144,8 +141,6 @@ jobs:
           cmake --build . --config ${{ matrix.config.BUILD_TYPE }}
 
       - name: Run tests
-        shell: pwsh
-        env:
-          PATH: ${{ env.PATH }};${{ github.workspace }}\build\_deps\catch2-build\src\${{ matrix.config.BUILD_TYPE }};${{ github.workspace }}\build\${{ matrix.config.BUILD_TYPE }}
+        shell: pwsh        
         run: |
           build\tests\${{ matrix.config.BUILD_TYPE }}\spdlog-utests.exe
