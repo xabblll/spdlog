@@ -77,61 +77,108 @@ jobs:
           make -j2
           ctest -j2 --output-on-failure
 
-  build_msmvc_2022:
+  
+  build_windows:
     runs-on: windows-latest
-    name: "Windows MSVC 2022 (C++11, Release)"
+    strategy:
+      matrix:
+        config:
+          - GENERATOR: '"Visual Studio 15 2017 Win64"'
+            BUILD_TYPE: Debug
+            BUILD_SHARED: 'OFF'
+            FATAL_ERRORS: 'OFF'
+            WCHAR: 'ON'
+            WCHAR_FILES: 'OFF'
+            BUILD_EXAMPLE: 'ON'
+            USE_STD_FORMAT: 'OFF'
+            CXX_STANDARD: 11
+          - GENERATOR: '"Visual Studio 15 2017 Win64"'
+            BUILD_TYPE: Release
+            BUILD_SHARED: 'OFF'
+            FATAL_ERRORS: 'OFF'
+            WCHAR: 'OFF'
+            WCHAR_FILES: 'OFF'
+            BUILD_EXAMPLE: 'ON'
+            USE_STD_FORMAT: 'OFF'
+            CXX_STANDARD: 11
+          - GENERATOR: '"Visual Studio 15 2017 Win64"'
+            BUILD_TYPE: Release
+            BUILD_SHARED: 'ON'
+            FATAL_ERRORS: 'OFF'
+            WCHAR: 'OFF'
+            WCHAR_FILES: 'OFF'
+            BUILD_EXAMPLE: 'ON'
+            USE_STD_FORMAT: 'OFF'
+            CXX_STANDARD: 11
+          - GENERATOR: '"Visual Studio 15 2017 Win64"'
+            BUILD_TYPE: Release
+            BUILD_SHARED: 'ON'
+            FATAL_ERRORS: 'OFF'
+            WCHAR: 'ON'
+            WCHAR_FILES: 'ON'
+            BUILD_EXAMPLE: 'OFF'
+            USE_STD_FORMAT: 'OFF'
+            CXX_STANDARD: 11
+          - GENERATOR: '"Visual Studio 16 2019" -A x64'
+            BUILD_TYPE: Release
+            BUILD_SHARED: 'ON'
+            FATAL_ERRORS: 'ON'
+            WCHAR: 'OFF'
+            WCHAR_FILES: 'OFF'
+            BUILD_EXAMPLE: 'OFF'
+            USE_STD_FORMAT: 'OFF'
+            CXX_STANDARD: 17
+          - GENERATOR: '"Visual Studio 17 2022" -A x64'
+            BUILD_TYPE: Release
+            BUILD_SHARED: 'ON'
+            FATAL_ERRORS: 'ON'
+            WCHAR: 'OFF'
+            WCHAR_FILES: 'OFF'
+            BUILD_EXAMPLE: 'OFF'
+            USE_STD_FORMAT: 'ON'
+            CXX_STANDARD: 20
+          - GENERATOR: '"Visual Studio 17 2022" -A x64'
+            BUILD_TYPE: Release
+            BUILD_SHARED: 'ON'
+            FATAL_ERRORS: 'ON'
+            WCHAR: 'ON'
+            WCHAR_FILES: 'ON'
+            BUILD_EXAMPLE: 'OFF'
+            USE_STD_FORMAT: 'ON'
+            CXX_STANDARD: 20
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install CMake
-        run: choco install cmake --installargs '"ADD_CMAKE_TO_PATH=System"' --no-progress
+      - name: Set up CMake
+        uses: jwlawson/actions-setup-cmake@v1
 
       - name: Configure CMake
         run: |
-          cmake -S . -B build -G "Visual Studio 17 2022" -A x64 `
-            -DCMAKE_BUILD_TYPE=Release `
-            -DCMAKE_CXX_STANDARD=11 `
-            -DSPDLOG_BUILD_EXAMPLE=ON `
-            -DSPDLOG_BUILD_EXAMPLE_HO=ON `
-            -DSPDLOG_BUILD_WARNINGS=ON `
-            -DSPDLOG_BUILD_BENCH=OFF `
-            -DSPDLOG_BUILD_TESTS=ON `
-            -DSPDLOG_BUILD_TESTS_HO=OFF `
-            -DSPDLOG_SANITIZE_ADDRESS=OFF
+          mkdir build
+          cd build
+          cmake -G ${{ matrix.config.GENERATOR }} \
+            -D CMAKE_BUILD_TYPE=${{ matrix.config.BUILD_TYPE }} \
+            -D BUILD_SHARED_LIBS=${{ matrix.config.BUILD_SHARED }} \
+            -D SPDLOG_WCHAR_SUPPORT=${{ matrix.config.WCHAR }} \
+            -D SPDLOG_WCHAR_FILENAMES=${{ matrix.config.WCHAR_FILES }} \
+            -D SPDLOG_BUILD_EXAMPLE=${{ matrix.config.BUILD_EXAMPLE }} \
+            -D SPDLOG_BUILD_EXAMPLE_HO=${{ matrix.config.BUILD_EXAMPLE }} \
+            -D SPDLOG_BUILD_TESTS=ON \
+            -D SPDLOG_BUILD_TESTS_HO=OFF \
+            -D SPDLOG_BUILD_WARNINGS=${{ matrix.config.FATAL_ERRORS }} \
+            -D SPDLOG_USE_STD_FORMAT=${{ matrix.config.USE_STD_FORMAT }} \
+            -D CMAKE_CXX_STANDARD=${{ matrix.config.CXX_STANDARD }} ..
 
       - name: Build
-        run: cmake --build build --config Release
-
-      - name: Run Tests
-        run: ctest --test-dir build -C Release --output-on-failure --verbose
-
-  build_msmvc_2019:
-    runs-on: windows-2019
-    name: "Windows MSVC 2019 (C++11, Release)"
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install CMake
-        run: choco install cmake --installargs '"ADD_CMAKE_TO_PATH=System"' --no-progress
-
-      - name: Configure CMake
         run: |
-          cmake -S . -B build -G "Visual Studio 16 2019" -A x64 `
-            -DCMAKE_BUILD_TYPE=Release `
-            -DCMAKE_CXX_STANDARD=11 `
-            -DSPDLOG_BUILD_EXAMPLE=ON `
-            -DSPDLOG_BUILD_EXAMPLE_HO=ON `
-            -DSPDLOG_BUILD_WARNINGS=ON `
-            -DSPDLOG_BUILD_BENCH=OFF `
-            -DSPDLOG_BUILD_TESTS=ON `
-            -DSPDLOG_BUILD_TESTS_HO=OFF `
-            -DSPDLOG_SANITIZE_ADDRESS=OFF
+          cd build
+          cmake --build . --config ${{ matrix.config.BUILD_TYPE }}
 
-      - name: Build
-        run: cmake --build build --config Release
-
-      - name: Run Tests
-        run: ctest --test-dir build -C Release --output-on-failure --verbose
-
+      - name: Run tests
+        env:
+          PATH: ${{ env.PATH }};${{ github.workspace }}\build\_deps\catch2-build\src\${{ matrix.config.BUILD_TYPE }};${{ github.workspace }}\build\${{ matrix.config.BUILD_TYPE }}
+        run: |
+          build\tests\${{ matrix.config.BUILD_TYPE }}\spdlog-utests.exe
+  
