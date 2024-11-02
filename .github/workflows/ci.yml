@@ -92,8 +92,7 @@ jobs:
       fail-fast: true
       matrix:
         config:          
-          - GENERATOR: "Visual Studio 17 2022"
-            ARCH: "-A x64"            
+          - GENERATOR: "Visual Studio 17 2022 -A x64"            
             BUILD_TYPE: Release
             BUILD_SHARED: 'ON'
             FATAL_ERRORS: 'ON'
@@ -102,7 +101,7 @@ jobs:
             BUILD_EXAMPLE: 'OFF'
             USE_STD_FORMAT: 'ON'
             CXX_STANDARD: 20
-          - GENERATOR: "Visual Studio 17 2022"
+          - GENERATOR: "Visual Studio 17 2022 -A x64"
             ARCH: "-A x64"
             BUILD_TYPE: Release
             BUILD_SHARED: 'ON'
@@ -112,6 +111,16 @@ jobs:
             BUILD_EXAMPLE: 'OFF'
             USE_STD_FORMAT: 'ON'
             CXX_STANDARD: 20            
+          - GENERATOR: "Visual Studio 17 2022 -A x64"
+            ARCH: "-A x64"
+            BUILD_TYPE: Release
+            BUILD_SHARED: 'ON'
+            FATAL_ERRORS: 'ON'
+            WCHAR: 'OFF'
+            WCHAR_FILES: 'OFF'
+            BUILD_EXAMPLE: 'ON'
+            USE_STD_FORMAT: 'OFF'
+            CXX_STANDARD: 20       
     
     steps:
       - name: Checkout code
@@ -122,7 +131,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake -G "${{ matrix.config.GENERATOR }}" ${{ matrix.config.ARCH }} `
+          cmake -G "${{ matrix.config.GENERATOR }}" `
             -D CMAKE_BUILD_TYPE=${{ matrix.config.BUILD_TYPE }} `
             -D BUILD_SHARED_LIBS=${{ matrix.config.BUILD_SHARED }} `
             -D SPDLOG_WCHAR_SUPPORT=${{ matrix.config.WCHAR }} `
