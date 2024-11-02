@@ -11,6 +11,7 @@ jobs:
   # -----------------------------------------------------------------------
   build:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action == 'opened')
     defaults:
       run:
         shell: bash
