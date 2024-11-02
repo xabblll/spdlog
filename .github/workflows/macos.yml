@@ -2,8 +2,11 @@ name: macos
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
-  build_osx:
+  build:
     runs-on: macOS-latest
     name: "macOS Clang (C++11, Release)"
     steps:

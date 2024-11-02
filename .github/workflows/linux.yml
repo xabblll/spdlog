@@ -2,11 +2,14 @@ name: linux
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   # -----------------------------------------------------------------------
   # Linux build matrix
   # -----------------------------------------------------------------------
-  build_linux:
+  build:
     runs-on: ubuntu-latest
     defaults:
       run:
