@@ -147,11 +147,11 @@ jobs:
           $dllDestPath = "build/tests"
           Copy-Item -Path "$dllSourcePath\*.dll" -Destination $dllDestPath -Force
 
-      - name: Run Tests0
-        run: ctest --test-dir build -C Release --output-on-failure --verbose
         
       - name: Tests        
         shell: pwsh
+        env:
+          PATH: ${{ env.PATH }};${{ github.workspace }}\build\_deps\catch2-build\src\${{ matrix.config.BUILD_TYPE }};${{ github.workspace }}\build\${{ matrix.config.BUILD_TYPE }}
         run: |          
-          ctest -VV -C ${{ matrix.config.BUILD_TYPE }} --test-dir build --no-tests=error --build-config Release
+          ctest -VV -C ${{ matrix.config.BUILD_TYPE }} --test-dir build/tests --no-tests=error --build-config Release
         
