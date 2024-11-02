@@ -143,6 +143,8 @@ jobs:
       - name: Tests        
         shell: pwsh
         run: |
-          cd build/${{ matrix.config.BUILD_TYPE }}
-          ctest -VV -C ${{ matrix.config.BUILD_TYPE }} --test-dir ../tests --no-tests=error
+          $DLL_PATH = Join-Path -Path (Get-Location) -ChildPath "build/Release"          
+          $env:Path += ';' + $env:DLL_PATH
+          echo "Path=$env:Path" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          ctest -VV -C ${{ matrix.config.BUILD_TYPE }} --test-dir build/tests --no-tests=error
         
