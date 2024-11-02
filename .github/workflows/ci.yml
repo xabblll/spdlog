@@ -3,6 +3,9 @@ name: ci
 on: [push, pull_request]
 
 jobs:
+  # -----------------------------------------------------------------------
+  # Linux build matrix
+  # -----------------------------------------------------------------------
   build_linux:
     runs-on: ubuntu-latest
     defaults:
@@ -56,6 +59,9 @@ jobs:
           make -j2
           ctest -j2 --output-on-failure
 
+  # -----------------------------------------------------------------------
+  # OS X build matrix
+  # -----------------------------------------------------------------------
   build_osx:
     runs-on: macOS-latest
     name: "OS X Clang (C++11, Release)"
@@ -77,13 +83,16 @@ jobs:
           make -j2
           ctest -j2 --output-on-failure
 
-
+  # -----------------------------------------------------------------------
+  # Windows build matrix
+  # -----------------------------------------------------------------------
   build_windows:
     runs-on: windows-latest
     strategy:
       matrix:
         config:
-          - GENERATOR: '"Visual Studio 15 2017 Win64"'
+          - GENERATOR: "Visual Studio 16 2019"
+            ARCH: "-A x64"
             BUILD_TYPE: Debug
             BUILD_SHARED: 'OFF'
             FATAL_ERRORS: 'OFF'
@@ -92,7 +101,8 @@ jobs:
             BUILD_EXAMPLE: 'ON'
             USE_STD_FORMAT: 'OFF'
             CXX_STANDARD: 11
-          - GENERATOR: '"Visual Studio 15 2017 Win64"'
+          - GENERATOR: "Visual Studio 16 2019"
+            ARCH: "-A x64"
             BUILD_TYPE: Release
             BUILD_SHARED: 'OFF'
             FATAL_ERRORS: 'OFF'
@@ -101,7 +111,8 @@ jobs:
             BUILD_EXAMPLE: 'ON'
             USE_STD_FORMAT: 'OFF'
             CXX_STANDARD: 11
-          - GENERATOR: '"Visual Studio 15 2017" -A x64'
+          - GENERATOR: "Visual Studio 16 2019"
+            ARCH: "-A x64"
             BUILD_TYPE: Release
             BUILD_SHARED: 'ON'
             FATAL_ERRORS: 'OFF'
@@ -110,16 +121,8 @@ jobs:
             BUILD_EXAMPLE: 'ON'
             USE_STD_FORMAT: 'OFF'
             CXX_STANDARD: 11
-          - GENERATOR: '"Visual Studio 15 2017" -A x64'
-            BUILD_TYPE: Release
-            BUILD_SHARED: 'ON'
-            FATAL_ERRORS: 'OFF'
-            WCHAR: 'ON'
-            WCHAR_FILES: 'ON'
-            BUILD_EXAMPLE: 'OFF'
-            USE_STD_FORMAT: 'OFF'
-            CXX_STANDARD: 11
-          - GENERATOR: '"Visual Studio 16 2019" -A x64'
+          - GENERATOR: "Visual Studio 16 2019"
+            ARCH: "-A x64"
             BUILD_TYPE: Release
             BUILD_SHARED: 'ON'
             FATAL_ERRORS: 'ON'
@@ -128,7 +131,8 @@ jobs:
             BUILD_EXAMPLE: 'OFF'
             USE_STD_FORMAT: 'OFF'
             CXX_STANDARD: 17
-          - GENERATOR: '"Visual Studio 17 2022" -A x64'
+          - GENERATOR: "Visual Studio 17 2022"
+            ARCH: "-A x64"
             BUILD_TYPE: Release
             BUILD_SHARED: 'ON'
             FATAL_ERRORS: 'ON'
@@ -137,7 +141,8 @@ jobs:
             BUILD_EXAMPLE: 'OFF'
             USE_STD_FORMAT: 'ON'
             CXX_STANDARD: 20
-          - GENERATOR: '"Visual Studio 17 2022" -A x64'
+          - GENERATOR: "Visual Studio 17 2022"
+            ARCH: "-A x64"
             BUILD_TYPE: Release
             BUILD_SHARED: 'ON'
             FATAL_ERRORS: 'ON'
@@ -155,10 +160,11 @@ jobs:
         uses: jwlawson/actions-setup-cmake@v1
 
       - name: Configure CMake
+        shell: pwsh
         run: |
           mkdir build
           cd build
-          cmake -G ${{ matrix.config.GENERATOR }} `
+          cmake -G "${{ matrix.config.GENERATOR }}" ${{ matrix.config.ARCH }} `
             -D CMAKE_BUILD_TYPE=${{ matrix.config.BUILD_TYPE }} `
             -D BUILD_SHARED_LIBS=${{ matrix.config.BUILD_SHARED }} `
             -D SPDLOG_WCHAR_SUPPORT=${{ matrix.config.WCHAR }} `
@@ -172,13 +178,14 @@ jobs:
             -D CMAKE_CXX_STANDARD=${{ matrix.config.CXX_STANDARD }} ..
 
       - name: Build
+        shell: pwsh
         run: |
           cd build
           cmake --build . --config ${{ matrix.config.BUILD_TYPE }}
 
       - name: Run tests
+        shell: pwsh
         env:
           PATH: ${{ env.PATH }};${{ github.workspace }}\build\_deps\catch2-build\src\${{ matrix.config.BUILD_TYPE }};${{ github.workspace }}\build\${{ matrix.config.BUILD_TYPE }}
         run: |
           build\tests\${{ matrix.config.BUILD_TYPE }}\spdlog-utests.exe
-  
