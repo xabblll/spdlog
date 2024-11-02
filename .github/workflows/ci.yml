@@ -142,6 +142,4 @@ jobs:
 
       - name: Run tests
         shell: pwsh        
-        run: |
-          cd build
-          ctest --config ${{ matrix.config.BUILD_TYPE }} --output-on-failure --verbose
+        run: ctest --test-dir build -C Release --output-on-failure --verbose
