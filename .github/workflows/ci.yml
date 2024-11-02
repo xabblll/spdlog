@@ -101,8 +101,7 @@ jobs:
             BUILD_EXAMPLE: 'OFF'
             USE_STD_FORMAT: 'ON'
             CXX_STANDARD: 20
-          - GENERATOR: "Visual Studio 17 2022"
-            ARCH: "-A x64"
+          - GENERATOR: "Visual Studio 17 2022"            
             BUILD_TYPE: Release
             BUILD_SHARED: 'ON'
             FATAL_ERRORS: 'ON'
@@ -111,8 +110,7 @@ jobs:
             BUILD_EXAMPLE: 'OFF'
             USE_STD_FORMAT: 'ON'
             CXX_STANDARD: 20            
-          - GENERATOR: "Visual Studio 17 2022"
-            ARCH: "-A x64"
+          - GENERATOR: "Visual Studio 16 2019"            
             BUILD_TYPE: Release
             BUILD_SHARED: 'ON'
             FATAL_ERRORS: 'ON'
