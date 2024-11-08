@@ -58,7 +58,7 @@ function(spdlog_enable_addr_sanitizer target_name)
     target_compile_options(${target_name} PRIVATE -fno-sanitize=signed-integer-overflow)
     target_compile_options(${target_name} PRIVATE -fno-sanitize-recover=all)
     target_compile_options(${target_name} PRIVATE -fno-omit-frame-pointer)
-    target_link_libraries(${target_name} PRIVATE -fsanitize=address,undefined -fuse-ld=gold)
+    target_link_libraries(${target_name} PRIVATE -fsanitize=address,undefined)
 endfunction()
 
 # Enable thread sanitizer (gcc/clang only)
