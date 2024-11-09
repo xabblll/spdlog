@@ -178,11 +178,9 @@ SPDLOG_INLINE void logger::err_handler_(const std::string &msg) {
         char date_buf[64];
         std::strftime(date_buf, sizeof(date_buf), "%Y-%m-%d %H:%M:%S", &tm_time);
         #if defined(USING_R) && defined(R_R_H)  // if in R environment
-            REprintf("[*** LOG ERROR ***] [%s] [%s] %s\n",
-                date_buf, name().c_str(), msg.c_str());
+            REprintf("[*** LOG ERROR ***] [%s] [%s] %s\n", date_buf, name().c_str(), msg.c_str());
         #else
-            std::fprintf(stderr, "[*** LOG ERROR ***] [%s] [%s] %s\n",
-                date_buf, name().c_str(), msg.c_str());
+            std::fprintf(stderr, "[*** LOG ERROR ***] [%s] [%s] %s\n", date_buf, name().c_str(), msg.c_str());
         #endif
     }
 }
