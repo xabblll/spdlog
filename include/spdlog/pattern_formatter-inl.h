@@ -10,11 +10,6 @@
 #include <spdlog/details/fmt_helper.h>
 #include <spdlog/details/log_msg.h>
 #include <spdlog/details/os.h>
-
-#ifndef SPDLOG_NO_TLS
-    #include <spdlog/mdc.h>
-#endif
-
 #include <spdlog/fmt/fmt.h>
 #include <spdlog/formatter.h>
 
