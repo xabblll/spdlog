@@ -99,6 +99,8 @@ public:
 
     void apply_logger_env_levels(std::shared_ptr<logger> new_logger);
 
+    std::mutex& console_mutex();
+
 private:
     registry();
     ~registry();
@@ -119,6 +121,7 @@ private:
     std::shared_ptr<logger> default_logger_;
     bool automatic_registration_ = true;
     size_t backtrace_n_messages_ = 0;
+    std::mutex console_mutex_;
 };
 
 }  // namespace details

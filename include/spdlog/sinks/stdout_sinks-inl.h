@@ -8,7 +8,6 @@
 #endif
 
 #include <memory>
-#include <spdlog/details/console_globals.h>
 #include <spdlog/pattern_formatter.h>
 
 #ifdef _WIN32
@@ -22,17 +21,15 @@
 
     #include <io.h>     // _get_osfhandle(..)
     #include <stdio.h>  // _fileno(..)
-#endif                  // WIN32
+#endif                  // _WIN32
 
 namespace spdlog {
 
 namespace sinks {
 
-template <typename ConsoleMutex>
-SPDLOG_INLINE stdout_sink_base<ConsoleMutex>::stdout_sink_base(FILE *file)
-    : mutex_(ConsoleMutex::mutex()),
-      file_(file),
-      formatter_(details::make_unique<spdlog::pattern_formatter>()) {
+template <typename Mutex>
+SPDLOG_INLINE stdout_sink_base<Mutex>::stdout_sink_base(FILE *file)
+    :file_(file) {
 #ifdef _WIN32
     // get windows handle from the FILE* object
 
@@ -47,15 +44,14 @@ SPDLOG_INLINE stdout_sink_base<ConsoleMutex>::stdout_sink_base(FILE *file)
 #endif  // WIN32
 }
 
-template <typename ConsoleMutex>
-SPDLOG_INLINE void stdout_sink_base<ConsoleMutex>::log(const details::log_msg &msg) {
+template <typename Mutex>
+SPDLOG_INLINE void stdout_sink_base<Mutex>::sink_it_(const details::log_msg &msg) {
 #ifdef _WIN32
     if (handle_ == INVALID_HANDLE_VALUE) {
         return;
     }
-    std::lock_guard<mutex_t> lock(mutex_);
     memory_buf_t formatted;
-    formatter_->format(msg, formatted);
+    base_sink<Mutex>::formatter_->format(msg, formatted);
     auto size = static_cast<DWORD>(formatted.size());
     DWORD bytes_written = 0;
     bool ok = ::WriteFile(handle_, formatted.data(), size, &bytes_written, nullptr) != 0;
@@ -64,42 +60,27 @@ SPDLOG_INLINE void stdout_sink_base<ConsoleMutex>::log(const details::log_msg &m
                         std::to_string(::GetLastError()));
     }
 #else
-    std::lock_guard<mutex_t> lock(mutex_);
     memory_buf_t formatted;
-    formatter_->format(msg, formatted);
+    base_sink<Mutex>::formatter_->format(msg, formatted);
     ::fwrite(formatted.data(), sizeof(char), formatted.size(), file_);
 #endif                // WIN32
     ::fflush(file_);  // flush every line to terminal
 }
 
-template <typename ConsoleMutex>
-SPDLOG_INLINE void stdout_sink_base<ConsoleMutex>::flush() {
-    std::lock_guard<mutex_t> lock(mutex_);
+template <typename Mutex>
+SPDLOG_INLINE void stdout_sink_base<Mutex>::flush_() {
     fflush(file_);
 }
 
-template <typename ConsoleMutex>
-SPDLOG_INLINE void stdout_sink_base<ConsoleMutex>::set_pattern(const std::string &pattern) {
-    std::lock_guard<mutex_t> lock(mutex_);
-    formatter_ = std::unique_ptr<spdlog::formatter>(new pattern_formatter(pattern));
-}
-
-template <typename ConsoleMutex>
-SPDLOG_INLINE void stdout_sink_base<ConsoleMutex>::set_formatter(
-    std::unique_ptr<spdlog::formatter> sink_formatter) {
-    std::lock_guard<mutex_t> lock(mutex_);
-    formatter_ = std::move(sink_formatter);
-}
-
 // stdout sink
-template <typename ConsoleMutex>
-SPDLOG_INLINE stdout_sink<ConsoleMutex>::stdout_sink()
-    : stdout_sink_base<ConsoleMutex>(stdout) {}
+template <typename Mutex>
+SPDLOG_INLINE stdout_sink<Mutex>::stdout_sink()
+    : stdout_sink_base<Mutex>(stdout) {}
 
 // stderr sink
-template <typename ConsoleMutex>
-SPDLOG_INLINE stderr_sink<ConsoleMutex>::stderr_sink()
-    : stdout_sink_base<ConsoleMutex>(stderr) {}
+template <typename Mutex>
+SPDLOG_INLINE stderr_sink<Mutex>::stderr_sink()
+    : stdout_sink_base<Mutex>(stderr) {}
 
 }  // namespace sinks
 

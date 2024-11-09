@@ -245,6 +245,10 @@ SPDLOG_INLINE void registry::apply_logger_env_levels(std::shared_ptr<logger> new
     new_logger->set_level(new_level);
 }
 
+SPDLOG_INLINE std::mutex &registry::console_mutex() {
+    return console_mutex_;
+}
+
 SPDLOG_INLINE void registry::throw_if_exists_(const std::string &logger_name) {
     if (loggers_.find(logger_name) != loggers_.end()) {
         throw_spdlog_ex("logger with name '" + logger_name + "' already exists");
