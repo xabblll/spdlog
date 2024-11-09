@@ -7,6 +7,7 @@
 
 #include <array>
 #include <memory>
+#include <mutex>
 #include <string>
 
 namespace spdlog {
@@ -33,6 +34,7 @@ public:
 
     void set_color(level::level_enum color_level, string_view_t color);
     void set_color_mode(color_mode mode);
+    void set_console_mutex(std::mutex *console_mutex);
     bool should_color();
     // Formatting codes
     const string_view_t reset = "\033[m";
@@ -73,6 +75,7 @@ protected:
     FILE *target_file_;
     bool should_do_colors_;
     std::array<std::string, level::n_levels> colors_;
+    std::mutex *console_mutex_;
 
     void sink_it_(const details::log_msg &msg) override;
     void flush_() override;

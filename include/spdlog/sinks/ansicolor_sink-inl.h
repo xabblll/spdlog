@@ -15,7 +15,7 @@ namespace sinks {
 
 template <typename Mutex>
 SPDLOG_INLINE ansicolor_sink<Mutex>::ansicolor_sink(FILE *target_file, color_mode mode)
-    : target_file_(target_file)
+    : target_file_(target_file), console_mutex_(nullptr)
 {
     set_color_mode_(mode);
     colors_.at(level::trace) = to_string_(white);
@@ -42,6 +42,10 @@ SPDLOG_INLINE void ansicolor_sink<Mutex>::sink_it_(const details::log_msg &msg) 
     msg.color_range_end = 0;
     memory_buf_t formatted;
     base_sink<Mutex>::formatter_->format(msg, formatted);
+    auto console_lock = console_mutex_ != nullptr ?
+        std::unique_lock<std::mutex>(*console_mutex_) :
+        std::unique_lock<std::mutex>();
+
     if (should_do_colors_ && msg.color_range_end > msg.color_range_start) {
         // before color range
         print_range_(formatted, 0, msg.color_range_start);
@@ -60,6 +64,9 @@ SPDLOG_INLINE void ansicolor_sink<Mutex>::sink_it_(const details::log_msg &msg) 
 
 template <typename Mutex>
 SPDLOG_INLINE void ansicolor_sink<Mutex>::flush_() {
+    auto console_lock = console_mutex_ != nullptr ?
+        std::unique_lock<std::mutex>(*console_mutex_) :
+        std::unique_lock<std::mutex>();
     fflush(target_file_);
 }
 
@@ -72,6 +79,12 @@ template <typename Mutex>
 SPDLOG_INLINE void ansicolor_sink<Mutex>::set_color_mode(color_mode mode) {
     std::lock_guard<Mutex> lock(base_sink<Mutex>::mutex_);
     set_color_mode_(mode);
+}
+
+template <typename Mutex>
+SPDLOG_INLINE void ansicolor_sink<Mutex>::set_console_mutex(std::mutex* mutex) {
+    std::lock_guard<Mutex> lock(base_sink<Mutex>::mutex_);
+    console_mutex_ = mutex;
 }
 
 template <typename Mutex>
