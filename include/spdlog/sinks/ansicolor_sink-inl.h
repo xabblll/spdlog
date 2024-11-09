@@ -79,14 +79,13 @@ SPDLOG_INLINE void ansicolor_sink<Mutex>::set_color_mode_(color_mode mode) {
     switch (mode) {
         case color_mode::always:
             should_do_colors_ = true;
-        return;
+            return;
         case color_mode::automatic:
-            should_do_colors_ =
-                details::os::in_terminal(target_file_) && details::os::is_color_terminal();
-        return;
+            should_do_colors_ = details::os::in_terminal(target_file_) && details::os::is_color_terminal();
+            return;
         case color_mode::never:
             should_do_colors_ = false;
-        return;
+            return;
         default:
             should_do_colors_ = false;
     }
