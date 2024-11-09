@@ -17,7 +17,7 @@ template <typename Mutex>
 SPDLOG_INLINE ansicolor_sink<Mutex>::ansicolor_sink(FILE *target_file, color_mode mode)
     : target_file_(target_file)
 {
-    set_color_mode(mode);
+    set_color_mode_(mode);
     colors_.at(level::trace) = to_string_(white);
     colors_.at(level::debug) = to_string_(cyan);
     colors_.at(level::info) = to_string_(green);
