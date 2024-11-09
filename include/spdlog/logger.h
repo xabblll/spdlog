@@ -311,6 +311,7 @@ protected:
     spdlog::level_t flush_level_{level::off};
     err_handler custom_err_handler_{nullptr};
     details::backtracer tracer_;
+    std::atomic<size_t> err_counter{0};
 
     // common implementation for after templated public api has been resolved
     template <typename... Args>
