@@ -17,7 +17,7 @@ namespace spdlog {
 namespace sinks {
 template <typename Mutex>
 SPDLOG_INLINE wincolor_sink<Mutex>::wincolor_sink(void *out_handle, color_mode mode)
-    : out_handle_(out_handle) {
+    : out_handle_(out_handle), console_mutex_(nullptr) {
     set_color_mode_impl(mode);
     // set level colors
     colors_[level::trace] = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;  // white
@@ -46,6 +46,12 @@ void SPDLOG_INLINE wincolor_sink<Mutex>::set_color(level::level_enum level,
 }
 
 template <typename Mutex>
+void SPDLOG_INLINE wincolor_sink<Mutex>::set_console_mutex(std::mutex* mutex) {
+    std::lock_guard<Mutex> lock(base_t::mutex_);
+    console_mutex_ = mutex;
+}
+
+template <typename Mutex>
 void SPDLOG_INLINE wincolor_sink<Mutex>::sink_it_(const details::log_msg &msg) {
     if (out_handle_ == nullptr || out_handle_ == INVALID_HANDLE_VALUE) {
         return;
@@ -54,6 +60,10 @@ void SPDLOG_INLINE wincolor_sink<Mutex>::sink_it_(const details::log_msg &msg) {
     msg.color_range_end = 0;
     memory_buf_t formatted;
     base_t::formatter_->format(msg, formatted);
+
+    auto console_lock = console_mutex_ != nullptr ? std::unique_lock<std::mutex>(*console_mutex_)
+                                                  : std::unique_lock<std::mutex>();
+
     if (should_do_colors_ && msg.color_range_end > msg.color_range_start) {
         // before color range
         print_range_(formatted, 0, msg.color_range_start);

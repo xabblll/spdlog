@@ -30,11 +30,13 @@ public:
     // change the color for the given level
     void set_color(level::level_enum level, std::uint16_t color);    
     void set_color_mode(color_mode mode);
+    void set_console_mutex(std::mutex *console_mutex);
 
 protected:    
     void *out_handle_;    
     bool should_do_colors_;   
     std::array<std::uint16_t, level::n_levels> colors_;
+    std::mutex *console_mutex_;
 
     void sink_it_(const details::log_msg &msg) final override;
     void flush_() final override;    
