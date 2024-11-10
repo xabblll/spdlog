@@ -9,9 +9,7 @@
 
 #include <array>
 #include <cstdint>
-#include <memory>
 #include <mutex>
-#include <string>
 
 namespace spdlog {
 namespace sinks {
