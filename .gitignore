@@ -96,3 +96,6 @@ cmake-build-*/
 /.vs
 /out/build
 /CMakeSettings.json
+/build-2019/x64-Debug-vs2019
+/fmt
+/src/fmt
