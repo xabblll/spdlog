@@ -1,9 +1,9 @@
 project "spdlog"
 	kind "StaticLib"
 	language "C++"
-	staticruntime "On"
+    staticruntime "on"
 
-	-- --location "%{prj.name}"
+-- --location "%{prj.name}"
 	-- targetdir ("%{wks.location}/" .. TargetDirBase .. OutputDir .. "%{prj.name}")
     -- objdir ("%{wks.location}/" .. ObjDirBase .. OutputDir .. "%{prj.name}")
 
